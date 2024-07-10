@@ -7,11 +7,12 @@ import os
 
 # Load environment variables from .env file
 
-
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///financial_app.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['SECRET_KEY'] = os.getenv('SECRET_KEY')
+app._static_folder = "static/main.css"
+
 db.init_app(app)
 
 with app.app_context():
