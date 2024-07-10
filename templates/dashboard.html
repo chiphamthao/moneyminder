@@ -24,42 +24,66 @@
 </body>
 </html>  -->
 
-{% extends "base.html" %}
-
-{% block title %}Dashboard{% endblock %}
-
-{% block content %}
+{% extends "base.html" %} {% block title %}Dashboard{% endblock %} {% block
+content %}
 <div class="row">
-    <div class="col-12">
-        <h1 class="my-4">Hello, {{ current_user.username }}!</h1>
-        <div class="card-deck">
-            <div class="card">
-                <div class="card-body">
-                    <h2 class="card-title">Total Balance</h2>
-                    <p class="card-text">${{ balance }}</p>
-                </div>
-            </div>
-            <div class="card">
-                <div class="card-body">
-                    <h2 class="card-title">Incomes</h2>
-                    <p class="card-text">${{ incomes }}</p>
-                </div>
-            </div>
-            <div class="card">
-                <div class="card-body">
-                    <h2 class="card-title">Expenses</h2>
-                    <p class="card-text">${{ expenses }}</p>
-                </div>
-            </div>
+  <div class="col-12">
+    <h1 class="my-4">Hello, {{ current_user.username }}!</h1>
+    <div class="card-deck">
+      <div class="card">
+        <div class="card-body">
+          <h2 class="card-title">Total Balance</h2>
+          <p class="card-text">${{ balance }}</p>
         </div>
-        <div class="mt-4">
-            <h3>Financial Trends</h3>
-            <!-- Placeholder for charts -->
+      </div>
+      <div class="card">
+        <div class="card-body">
+          <h2 class="card-title">Incomes</h2>
+          <p class="card-text">${{ incomes }}</p>
         </div>
-        <div class="mt-4">
-            <h3>Goals</h3>
-            <!-- Placeholder for goals progress -->
+      </div>
+      <div class="card">
+        <div class="card-body">
+          <h2 class="card-title">Expenses</h2>
+          <p class="card-text">${{ expenses }}</p>
         </div>
+      </div>
     </div>
+    <div class="mt-4">
+      <h3>Financial Trends</h3>
+      <div style="width: 800px">
+        <canvas id="incomeChart"></canvas>
+      </div>
+      <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+      <script>
+        const data = [
+          { day: 5, percentage: 10 },
+          { day: 10, percentage: 20 },
+          { day: 15, percentage: 15 },
+          { day: 20, percentage: 25 },
+          { day: 25, percentage: 22 },
+          { day: 31, percentage: 8 },
+        ];
+
+        new Chart(document.getElementById("incomeChart"), {
+          type: "bar",
+          data: {
+            labels: data.map((row) => row.day),
+            datasets: [
+              {
+                label: "This month's income",
+                data: data.map((row) => row.percentage),
+                borderRadius: 10,
+              },
+            ],
+          },
+        });
+      </script>
+    </div>
+    <div class="mt-4">
+      <h3>Goals</h3>
+      <!-- Placeholder for goals progress -->
+    </div>
+  </div>
 </div>
 {% endblock %}
