@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+
+{% block title %}Chatbot{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <h1 class="my-4">Chatbot</h1>
+        <div class="card">
+            <div class="card-body">
+                <div class="chat">
+                    <div class="messages">
+                        <!-- Placeholder for chat messages -->
+                    </div>
+                    <form action="{{ url_for('chatbot') }}" method="post" class="mt-3">
+                        <div class="input-group">
+                            <input type="text" class="form-control" id="message" name="message" placeholder="Type your message..." required>
+                            <div class="input-group-append">
+                                <button type="submit" class="btn btn-primary">Send</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
