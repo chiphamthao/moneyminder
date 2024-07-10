@@ -1,0 +1,65 @@
+<!--<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Dashboard</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+    <div class="container">
+        <h1>Hello, User!</h1>
+        <div class="summary">
+            <h2>Total Balance: ${{ balance }}</h2>
+            <h2>Incomes: ${{ incomes }}</h2>
+            <h2>Expenses: ${{ expenses }}</h2>
+        </div>
+        <div class="charts">
+            <h3>Financial Trends</h3>
+        </div>
+        <div class="goals">
+            <h3>Goals</h3>
+
+        </div>
+    </div>
+</body>
+</html>  -->
+
+{% extends "base.html" %}
+
+{% block title %}Dashboard{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <h1 class="my-4">Hello, {{ current_user.username }}!</h1>
+        <div class="card-deck">
+            <div class="card">
+                <div class="card-body">
+                    <h2 class="card-title">Total Balance</h2>
+                    <p class="card-text">${{ balance }}</p>
+                </div>
+            </div>
+            <div class="card">
+                <div class="card-body">
+                    <h2 class="card-title">Incomes</h2>
+                    <p class="card-text">${{ incomes }}</p>
+                </div>
+            </div>
+            <div class="card">
+                <div class="card-body">
+                    <h2 class="card-title">Expenses</h2>
+                    <p class="card-text">${{ expenses }}</p>
+                </div>
+            </div>
+        </div>
+        <div class="mt-4">
+            <h3>Financial Trends</h3>
+            <!-- Placeholder for charts -->
+        </div>
+        <div class="mt-4">
+            <h3>Goals</h3>
+            <!-- Placeholder for goals progress -->
+        </div>
+    </div>
+</div>
+{% endblock %}

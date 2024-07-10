@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+
+{% block title %}Leaderboard{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <h1 class="my-4">Leaderboard</h1>
+        <div class="form-group">
+            <label for="filter">Filter by:</label>
+            <select id="filter" class="form-control">
+                <option value="weekly">Weekly</option>
+                <option value="monthly">Monthly</option>
+                <option value="yearly">Yearly</option>
+            </select>
+        </div>
+        <ul class="list-group mt-4">
+            {% for rank in rankings %}
+            <li class="list-group-item d-flex justify-content-between align-items-center">
+                {{ rank.user }}
+                <span class="badge badge-primary badge-pill">{{ rank.achievements }} achievements</span>
+            </li>
+            {% endfor %}
+        </ul>
+    </div>
+</div>
+{% endblock %}
