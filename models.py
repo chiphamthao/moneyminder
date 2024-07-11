@@ -26,8 +26,10 @@ class Goal(db.Model):
     name = db.Column(db.String(150), nullable=False)
     target_amount = db.Column(db.Float, nullable=False)
     current_amount = db.Column(db.Float, default=0.0)
-    deadline = db.Column(db.DateTime, nullable=False)
+    deadline = db.Column(db.DateTime, nullable=True)  # Make deadline nullable
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    public = db.Column(db.Boolean, default=False)
+    user = db.relationship('User', backref=db.backref('goals', lazy=True))
 
 class Message(db.Model):
     id = db.Column(db.Integer, primary_key=True)

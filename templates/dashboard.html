@@ -1,31 +1,8 @@
-<!--<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Dashboard</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
-</head>
-<body>
-    <div class="container">
-        <h1>Hello, User!</h1>
-        <div class="summary">
-            <h2>Total Balance: ${{ balance }}</h2>
-            <h2>Incomes: ${{ incomes }}</h2>
-            <h2>Expenses: ${{ expenses }}</h2>
-        </div>
-        <div class="charts">
-            <h3>Financial Trends</h3>
-        </div>
-        <div class="goals">
-            <h3>Goals</h3>
+{% extends "base.html" %}
 
-        </div>
-    </div>
-</body>
-</html>  -->
+{% block title %}Dashboard{% endblock %}
 
-{% extends "base.html" %} {% block title %}Dashboard{% endblock %} {% block
-content %}
+{% block content %}
 <div class="row">
   <div class="col-12">
     <h1 class="my-4">Hello, {{ current_user.username }}!</h1>
@@ -49,40 +26,102 @@ content %}
         </div>
       </div>
     </div>
-    <div class="mt-4">
-      <h3>Financial Trends</h3>
-      <div style="width: 800px">
-        <canvas id="incomeChart"></canvas>
-      </div>
-      <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-      <script>
-        const data = [
-          { day: 5, percentage: 10 },
-          { day: 10, percentage: 20 },
-          { day: 15, percentage: 15 },
-          { day: 20, percentage: 25 },
-          { day: 25, percentage: 22 },
-          { day: 31, percentage: 8 },
-        ];
+    
+    <div class="row mt-4">
+      <!-- Financial Trends Section -->
+      <div class="col-md-6">
+        <h3>Financial Trends</h3>
+        <div style="width: 100%;">
+          <canvas id="incomeChart"></canvas>
+        </div>
+        <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+        <script>
+          document.addEventListener('DOMContentLoaded', function() {
+            const data = {
+              days: {{ chart_data.days | safe }},
+              amounts: {{ chart_data.amounts | safe }}
+            };
 
-        new Chart(document.getElementById("incomeChart"), {
-          type: "bar",
-          data: {
-            labels: data.map((row) => row.day),
-            datasets: [
-              {
-                label: "This month's income",
-                data: data.map((row) => row.percentage),
-                borderRadius: 10,
+            new Chart(document.getElementById("incomeChart"), {
+              type: "bar",
+              data: {
+                labels: data.days,
+                datasets: [
+                  {
+                    label: "This month's income",
+                    data: data.amounts,
+                    borderRadius: 10,
+                  },
+                ],
               },
-            ],
-          },
-        });
-      </script>
+            });
+          });
+        </script>
+      </div>
+      
+      <!-- Input Income/Expenses Section -->
+      <div class="col-md-6">
+        <h3>Add Income/Expense</h3>
+        <form action="{{ url_for('add_transaction') }}" method="post">
+          <div class="form-group">
+            <label for="type">Type:</label>
+            <select class="form-control" id="type" name="type" required>
+              <option value="income">Income</option>
+              <option value="expense">Expense</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="amount">Amount:</label>
+            <input type="number" class="form-control" id="amount" name="amount" min="0.01" step="0.01" required>
+          </div>
+          <div class="form-group">
+            <label for="category">Category:</label>
+            <input type="text" class="form-control" id="category" name="category" required>
+          </div>
+          <div class="form-group">
+            <label for="description">Description:</label>
+            <textarea class="form-control" id="description" name="description"></textarea>
+          </div>
+          <button type="submit" class="btn btn-primary">Add Transaction</button>
+        </form>
+      </div>
     </div>
+    
     <div class="mt-4">
       <h3>Goals</h3>
       <!-- Placeholder for goals progress -->
+    </div>
+
+    <div class="mt-4">
+      <h3>Transactions</h3>
+      <table class="table table-striped">
+        <thead>
+          <tr>
+            <th>Type</th>
+            <th>Amount</th>
+            <th>Category</th>
+            <th>Description</th>
+            <th>Date</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for transaction in transactions %}
+          <tr>
+            <td>{{ transaction.type }}</td>
+            <td>{{ transaction.amount }}</td>
+            <td>{{ transaction.category }}</td>
+            <td>{{ transaction.description }}</td>
+            <td>{{ transaction.date.strftime('%Y-%m-%d') }}</td>
+            <td>
+              <form action="{{ url_for('delete_transaction', transaction_id=transaction.id) }}" method="post" style="display:inline;">
+                <button type="submit" class="btn btn-danger btn-sm">Delete</button>
+              </form>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
     </div>
   </div>
 </div>

@@ -8,10 +8,10 @@
         <h1 class="my-4">Leaderboard</h1>
         <div class="form-group">
             <label for="filter">Filter by:</label>
-            <select id="filter" class="form-control">
-                <option value="weekly">Weekly</option>
-                <option value="monthly">Monthly</option>
-                <option value="yearly">Yearly</option>
+            <select id="filter" class="form-control" onchange="filterLeaderboard()">
+                <option value="weekly" {% if filter_type == 'weekly' %}selected{% endif %}>Weekly</option>
+                <option value="monthly" {% if filter_type == 'monthly' %}selected{% endif %}>Monthly</option>
+                <option value="yearly" {% if filter_type == 'yearly' %}selected{% endif %}>Yearly</option>
             </select>
         </div>
         <ul class="list-group mt-4">
@@ -24,4 +24,11 @@
         </ul>
     </div>
 </div>
+
+<script>
+function filterLeaderboard() {
+    var filter = document.getElementById('filter').value;
+    window.location.href = "{{ url_for('leaderboard') }}?filter=" + filter;
+}
+</script>
 {% endblock %}
