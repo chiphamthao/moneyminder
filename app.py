@@ -112,7 +112,6 @@ def dashboard():
             daily_expense[day] += transaction.amount """
             daily_transactions[date] -= transaction.amount
             daily_expense[date] += transaction.amount
-            print("this never runs")
 
     # Sort days for consistent chart rendering
     #sorted_days = sorted(daily_transactions.keys())
