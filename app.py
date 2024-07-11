@@ -79,10 +79,11 @@ def dashboard():
 
     # Prepare data for the chart
     chart_data = {
-        'days': [],
+        #'days': [],
         'amounts': [],
         'income': [],
         'expense':[],
+        'dates':[]
     }
 
     # Group transactions by day
@@ -90,26 +91,41 @@ def dashboard():
     daily_income = {}
     daily_expense = {}
     for transaction in transactions:
-        day = transaction.date.day
-        if day not in daily_transactions:
+        #day = transaction.date.day
+        date = transaction.date.strftime('%Y-%m-%d')
+        if date not in daily_transactions:
+            """
             daily_transactions[day] = 0
             daily_income[day] = 0
-            daily_expense[day] = 0
+            daily_expense[day] = 0"""
+            daily_transactions[date] = 0
+            daily_income[date] = 0
+            daily_expense[date] = 0
         if transaction.type == 'income':
+            """
             daily_transactions[day] += transaction.amount
-            daily_income[day] += transaction.amount 
+            daily_income[day] += transaction.amount """
+            daily_transactions[date] += transaction.amount
+            daily_income[date] += transaction.amount 
         else:
-            daily_transactions[day] -= transaction.amount
-            daily_expense[day] += transaction.amount 
+            """daily_transactions[day] -= transaction.amount
+            daily_expense[day] += transaction.amount """
+            daily_transactions[date] -= transaction.amount
+            daily_expense[date] += transaction.amount
 
     # Sort days for consistent chart rendering
-    sorted_days = sorted(daily_transactions.keys())
-    for day in sorted_days:
-        chart_data['days'].append(day)
+    #sorted_days = sorted(daily_transactions.keys())
+    sorted_dates = sorted(daily_transactions.keys(), key=lambda x: datetime.strptime(x, '%Y-%m-%d'))
+    for date in sorted_dates:
+        """chart_data['days'].append(day)
         chart_data['amounts'].append(daily_transactions[day])
         chart_data['income'].append(daily_income[day])
         chart_data['expense'].append(daily_expense[day])
-
+        """
+        chart_data['dates'].append(date)
+        chart_data['amounts'].append(daily_transactions[date])
+        chart_data['income'].append(daily_income[date])
+        chart_data['expense'].append(daily_expense[date])
     return render_template('dashboard.html', balance=balance, incomes=incomes, expenses=expenses, chart_data=chart_data, transactions=transactions)
 
 @app.route('/delete_transaction/<int:transaction_id>', methods=['POST'])
@@ -125,7 +141,7 @@ def delete_transaction(transaction_id):
     flash('Transaction deleted successfully!', 'success')
     return redirect(url_for('dashboard'))
 
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, date
 
 @app.route('/leaderboard')
 @login_required
@@ -180,7 +196,8 @@ def add_transaction():
     amount = request.form['amount']
     category = request.form['category']
     description = request.form['description']
-    
+    time_obj = datetime.strptime(request.form['date'], "%Y-%m-%d")
+
     try:
         amount = float(amount)
         if amount <= 0:
@@ -195,7 +212,8 @@ def add_transaction():
         type=type,
         amount=amount,
         category=category,
-        description=description
+        description=description,
+        date=time_obj
     )
     db.session.add(new_transaction)
     db.session.commit()
