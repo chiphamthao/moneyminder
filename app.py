@@ -80,25 +80,35 @@ def dashboard():
     # Prepare data for the chart
     chart_data = {
         'days': [],
-        'amounts': []
+        'amounts': [],
+        'income': [],
+        'expense':[],
     }
 
     # Group transactions by day
     daily_transactions = {}
+    daily_income = {}
+    daily_expense = {}
     for transaction in transactions:
         day = transaction.date.day
         if day not in daily_transactions:
             daily_transactions[day] = 0
+            daily_income[day] = 0
+            daily_expense[day] = 0
         if transaction.type == 'income':
             daily_transactions[day] += transaction.amount
+            daily_income[day] += transaction.amount 
         else:
             daily_transactions[day] -= transaction.amount
+            daily_expense[day] += transaction.amount 
 
     # Sort days for consistent chart rendering
     sorted_days = sorted(daily_transactions.keys())
     for day in sorted_days:
         chart_data['days'].append(day)
         chart_data['amounts'].append(daily_transactions[day])
+        chart_data['income'].append(daily_income[day])
+        chart_data['expense'].append(daily_expense[day])
 
     return render_template('dashboard.html', balance=balance, incomes=incomes, expenses=expenses, chart_data=chart_data, transactions=transactions)
 
