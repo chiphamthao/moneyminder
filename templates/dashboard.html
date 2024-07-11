@@ -44,7 +44,9 @@ content %}
           document.addEventListener('DOMContentLoaded', function() {
             const data = {
               days: {{ chart_data.days | safe }},
-              amounts: {{ chart_data.amounts | safe }}
+              amounts: {{ chart_data.amounts | safe }},
+              income: {{ chart_data.income | safe }},
+              expense: {{ chart_data.expense | safe }},
             };
 
             new Chart(document.getElementById("incomeChart"), {
@@ -53,8 +55,8 @@ content %}
                 labels: data.days,
                 datasets: [
                   {
-                    label: "This month's income",
-                    data: data.amounts,
+                    label: "Daily income",
+                    data: data.income,
                     borderRadius: 10,
                   },
                 ],
@@ -67,8 +69,8 @@ content %}
                 labels: data.days,
                 datasets: [
                   {
-                    label: "This month's expenses",
-                    data: data.amounts,
+                    label: "Daily expenses",
+                    data: data.expense,
                     borderRadius: 10,
                   },
                 ],
