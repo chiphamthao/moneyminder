@@ -29,8 +29,26 @@ content %}
       <div class="col-md-6">
         <h3>Financial Trends</h3>
 
-        <button id="toggle-to-2">Show Expense Chart</button>
-        <button id="toggle-to-1">Show Income Chart</button>
+        <script
+          src="http://ajax.googleapis.com/ajax/libs/jquery/1.8.2/jquery.min.js"
+          type="text/javascript"
+        ></script>
+
+        <select placeholder="MM">
+          <option name="" value="" style="display: none">Select month</option>
+          <option name="January" value="Jan">January</option>
+          <option name="February" value="Feb">February</option>
+          <option name="March" value="Mar">March</option>
+          <option name="April" value="Apr">April</option>
+          <option name="May" value="May">May</option>
+          <option name="June" value="Jun">June</option>
+          <option name="July" value="Jul">July</option>
+          <option name="August" value="Aug">August</option>
+          <option name="September" value="Sep">September</option>
+          <option name="October" value="Oct">October</option>
+          <option name="November" value="Nov">November</option>
+          <option name="December" value="Dec">December</option>
+        </select>
 
         <div id="div-1" style="width: 100%">
           <canvas id="incomeChart"></canvas>
@@ -40,67 +58,79 @@ content %}
         </div>
 
         <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns/dist/chartjs-adapter-date-fns.bundle.min.js"></script>
         <script>
-          document.addEventListener('DOMContentLoaded', function() {
-            const data = {
-              days: {{ chart_data.days | safe }},
-              amounts: {{ chart_data.amounts | safe }},
-              income: {{ chart_data.income | safe }},
-              expense: {{ chart_data.expense | safe }},
-            };
+                  document.addEventListener('DOMContentLoaded', function() {
+                    const data = {
+                      dates: {{ chart_data.dates | safe }},
+                      amounts: {{ chart_data.amounts | safe }},
+                      income: {{ chart_data.income | safe }},
+                      expense: {{ chart_data.expense | safe }},
+                    };
 
-            new Chart(document.getElementById("incomeChart"), {
-              type: "bar",
-              data: {
-                labels: data.days,
-                datasets: [
-                  {
-                    label: "Daily income",
-                    data: data.income,
-                    borderRadius: 10,
-                  },
-                ],
-              },
+                    new Chart(document.getElementById("incomeChart"), {
+                      type: "bar",
+                      data: {
+                        labels: data.dates,
+                        datasets: [
+                          {
+                            label: "Daily income",
+                            data: data.income,
+                            borderRadius: 10,
+                          },
+                        ],
+                      },
+                      options:{
+                        scales:{
+                            x:{
+                                type:'time',
+                                time:{
+                                   unit:'day'
+                                }
+                            },
+                            y:{
+                                beginAtZero: true
+                            }
+                        }
+                      }
+                    });
+
+
+                    new Chart(document.getElementById("expenseChart"), {
+                      type: "bar",
+                      data: {
+                        labels: data.dates,
+                        datasets: [
+                          {
+                            label: "Daily expenses",
+                            data: data.expense,
+                            borderRadius: 10,
+                          },
+                        ],
+                      },
+                      options:{
+                        scales:{
+                            x:{
+                                type:'time',
+                                time:{
+                                   unit:'day'
+                                }
+                            },
+                            y:{
+                                beginAtZero: true
+                            }
+                        }
+                      }
+                    });
+                  });
+            $(document).ready(function() {
+            $('select').change(function() {
+             $('select option')[0].value=$('select option:selected').val();
+             $('select option')[0].innerHTML=$('select option:selected').val();
+             $("select").val($('select option:selected').val());
+
+          	console.log($('select option:selected').val());
             });
-
-            new Chart(document.getElementById("expenseChart"), {
-              type: "bar",
-              data: {
-                labels: data.days,
-                datasets: [
-                  {
-                    label: "Daily expenses",
-                    data: data.expense,
-                    borderRadius: 10,
-                  },
-                ],
-              },
-            });
-          });
-          const toggleTo2 = document.getElementById("toggle-to-2");
-          const toggleTo1 = document.getElementById("toggle-to-1");
-
-          const div1 = document.getElementById("div-1");
-          const div2 = document.getElementById("div-2");
-
-          const hide = (el) => el.style.setProperty("display", "none");
-          const show = (el) => el.style.setProperty("display", "block");
-
-          hide(div2);
-          hide(toggleTo1);
-
-          toggleTo2.addEventListener("click", () => {
-            hide(div1);
-            hide(toggleTo2);
-            show(toggleTo1);
-            show(div2);
-          });
-
-          toggleTo1.addEventListener("click", () => {
-            hide(div2);
-            hide(toggleTo1);
-            show(toggleTo2);
-            show(div1);
           });
         </script>
       </div>
@@ -128,6 +158,7 @@ content %}
               required
             />
           </div>
+
           <div class="form-group">
             <label for="category">Category:</label>
             <input
@@ -138,6 +169,19 @@ content %}
               required
             />
           </div>
+
+          <div class="form-group">
+            <label for="datepicker">Date:</label>
+            <input
+              class="form-control"
+              type="date"
+              id="date"
+              name="date"
+              min="2024-01-01"
+              max="2024-12-31"
+            />
+          </div>
+
           <div class="form-group">
             <label for="description">Description:</label>
             <textarea
@@ -146,6 +190,7 @@ content %}
               name="description"
             ></textarea>
           </div>
+
           <button type="submit" class="btn btn-primary">Add Transaction</button>
         </form>
       </div>
