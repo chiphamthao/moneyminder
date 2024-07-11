@@ -1,8 +1,5 @@
-{% extends "base.html" %}
-
-{% block title %}Dashboard{% endblock %}
-
-{% block content %}
+{% extends "base.html" %} {% block title %}Dashboard{% endblock %} {% block
+content %}
 <div class="row">
   <div class="col-12">
     <h1 class="my-4">Hello, {{ current_user.username }}!</h1>
@@ -26,14 +23,22 @@
         </div>
       </div>
     </div>
-    
+
     <div class="row mt-4">
       <!-- Financial Trends Section -->
       <div class="col-md-6">
         <h3>Financial Trends</h3>
-        <div style="width: 100%;">
+
+        <button id="toggle-to-2">Show Expense Chart</button>
+        <button id="toggle-to-1">Show Income Chart</button>
+
+        <div id="div-1" style="width: 100%">
           <canvas id="incomeChart"></canvas>
         </div>
+        <div id="div-2" style="width: 100%">
+          <canvas id="expenseChart"></canvas>
+        </div>
+
         <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
         <script>
           document.addEventListener('DOMContentLoaded', function() {
@@ -55,10 +60,49 @@
                 ],
               },
             });
+
+            new Chart(document.getElementById("expenseChart"), {
+              type: "bar",
+              data: {
+                labels: data.days,
+                datasets: [
+                  {
+                    label: "This month's expenses",
+                    data: data.amounts,
+                    borderRadius: 10,
+                  },
+                ],
+              },
+            });
+          });
+          const toggleTo2 = document.getElementById("toggle-to-2");
+          const toggleTo1 = document.getElementById("toggle-to-1");
+
+          const div1 = document.getElementById("div-1");
+          const div2 = document.getElementById("div-2");
+
+          const hide = (el) => el.style.setProperty("display", "none");
+          const show = (el) => el.style.setProperty("display", "block");
+
+          hide(div2);
+          hide(toggleTo1);
+
+          toggleTo2.addEventListener("click", () => {
+            hide(div1);
+            hide(toggleTo2);
+            show(toggleTo1);
+            show(div2);
+          });
+
+          toggleTo1.addEventListener("click", () => {
+            hide(div2);
+            hide(toggleTo1);
+            show(toggleTo2);
+            show(div1);
           });
         </script>
       </div>
-      
+
       <!-- Input Income/Expenses Section -->
       <div class="col-md-6">
         <h3>Add Income/Expense</h3>
@@ -72,21 +116,39 @@
           </div>
           <div class="form-group">
             <label for="amount">Amount:</label>
-            <input type="number" class="form-control" id="amount" name="amount" min="0.01" step="0.01" required>
+            <input
+              type="number"
+              class="form-control"
+              id="amount"
+              name="amount"
+              min="0.01"
+              step="0.01"
+              required
+            />
           </div>
           <div class="form-group">
             <label for="category">Category:</label>
-            <input type="text" class="form-control" id="category" name="category" required>
+            <input
+              type="text"
+              class="form-control"
+              id="category"
+              name="category"
+              required
+            />
           </div>
           <div class="form-group">
             <label for="description">Description:</label>
-            <textarea class="form-control" id="description" name="description"></textarea>
+            <textarea
+              class="form-control"
+              id="description"
+              name="description"
+            ></textarea>
           </div>
           <button type="submit" class="btn btn-primary">Add Transaction</button>
         </form>
       </div>
     </div>
-    
+
     <div class="mt-4">
       <h3>Goals</h3>
       <!-- Placeholder for goals progress -->
@@ -114,8 +176,14 @@
             <td>{{ transaction.description }}</td>
             <td>{{ transaction.date.strftime('%Y-%m-%d') }}</td>
             <td>
-              <form action="{{ url_for('delete_transaction', transaction_id=transaction.id) }}" method="post" style="display:inline;">
-                <button type="submit" class="btn btn-danger btn-sm">Delete</button>
+              <form
+                action="{{ url_for('delete_transaction', transaction_id=transaction.id) }}"
+                method="post"
+                style="display: inline"
+              >
+                <button type="submit" class="btn btn-danger btn-sm">
+                  Delete
+                </button>
               </form>
             </td>
           </tr>
