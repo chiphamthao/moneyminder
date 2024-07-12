@@ -1,31 +1,26 @@
 body {
-  background-color: #f8f9fa;
+    background-color: #f8f9fa;
 }
-
 .card {
-  margin-bottom: 20px;
+    margin-bottom: 20px;
 }
-
 .card-title {
-  font-size: 1.5rem;
+    font-size: 1.5rem;
 }
-
 .card-text {
-  font-size: 1.25rem;
+    font-size: 1.25rem;
 }
 
 .container {
-  margin-top: 50px;
+    margin-top: 50px;
 }
-
 .chat .messages {
-  max-height: 300px;
-  overflow-y: auto;
-  margin-bottom: 20px;
+    max-height: 300px;
+    overflow-y: auto;
+    margin-bottom: 20px;
 }
-
 .input-group-append {
-  display: flex;
+    display: flex;
 }
 
 html {
