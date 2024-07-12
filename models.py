@@ -29,6 +29,7 @@ class Goal(db.Model):
     deadline = db.Column(db.DateTime, nullable=True)  # Make deadline nullable
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     public = db.Column(db.Boolean, default=False)
+    completed_at = db.Column(db.DateTime, nullable=True)  # Add this field
     user = db.relationship('User', backref=db.backref('goals', lazy=True))
 
 class Message(db.Model):
@@ -36,3 +37,5 @@ class Message(db.Model):
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
     content = db.Column(db.String(500), nullable=False)
     timestamp = db.Column(db.DateTime, default=datetime.utcnow)
+    role = db.Column(db.String(50), nullable=False)  # 'user' or 'system'
+    session_id = db.Column(db.String(100), nullable=False)
