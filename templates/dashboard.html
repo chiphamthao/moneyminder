@@ -1,8 +1,5 @@
-{% extends "base.html" %}
-
-{% block title %}Dashboard{% endblock %}
-
-{% block content %}
+{% extends "base.html" %} {% block title %}Dashboard{% endblock %} {% block
+content %}
 <div class="row">
   <div class="col-12">
     <h1 class="my-4">Hello, {{ current_user.username }}!</h1>
@@ -32,6 +29,7 @@
       <div class="col-md-6">
         <h3>Financial Trends</h3>
         <div id="div-1" style="width: 100%">
+          <input type="month" onchange="filterChart(this)" />
           <canvas id="incomeChart"></canvas>
         </div>
         <div id="div-2" style="width: 100%">
@@ -40,7 +38,7 @@
         <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
         <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns/dist/chartjs-adapter-date-fns.bundle.min.js"></script>
         <script>
-          document.addEventListener('DOMContentLoaded', function() {
+          /*document.addEventListener('DOMContentLoaded', function() {*/
             const data = {
               dates: {{ chart_data.dates | safe }},
               amounts: {{ chart_data.amounts | safe }},
@@ -48,40 +46,44 @@
               expense: {{ chart_data.expense | safe }},
             };
 
-            const incomeChart = new Chart(document.getElementById("incomeChart"), {
-              type: "bar",
-              data: {
-                labels: data.dates,
-                datasets: [
-                  {
-                    label: "This month's income",
-                    data: data.amounts,
-                    backgroundColor: 'rgba(54, 162, 235, 0.2)',
-                    borderColor: 'rgba(54, 162, 235, 1)',
-                    borderWidth: 1,
-                    borderRadius: 10,
-                  },
-                  {
-                    label: "Daily income",
-                    data: data.income,
-                    borderRadius: 10,
-                  },
-                ],
+            var options = {
+              responsive: true,
+              title: {
+                text: 'multiple colors for bars',
+                display: true
               },
-              options: {
-                scales: {
+              scales: {
                   x: {
+                    stacked: true,
                     type: 'time',
                     time: {
                       unit: 'day'
+
                     }
                   },
                   y: {
+                    stacked: true,
                     beginAtZero: true
                   }
                 }
               }
-            });
+
+            const incomeChart = new Chart(document.getElementById("incomeChart"), {
+              type: "bar",
+              data: {
+              labels: data.dates,
+              datasets: [
+                  {
+                  label: "Daily income",
+                  data: data.income,
+                  backgroundColor: 'rgba(54, 162, 235, 1)',
+                  borderColor: 'rgba(54, 162, 235, 1)',
+                  borderWidth: 1,
+                  },
+              ],
+              },
+              options: options
+          });
 
             const expenseChart = new Chart(document.getElementById("expenseChart"), {
               type: "bar",
@@ -91,25 +93,35 @@
                   {
                     label: "Daily expenses",
                     data: data.expense,
-                    borderRadius: 10,
+                    backgroundColor: 'rgb(205, 92, 92)',
+                    borderColor: 'rgb(205, 92, 92)',
+                    borderWidth: 1,
                   },
                 ],
               },
-              options: {
-                scales: {
-                  x: {
-                    type: 'time',
-                    time: {
-                      unit: 'day'
-                    }
-                  },
-                  y: {
-                    beginAtZero: true
-                  }
-                }
-              }
+              options: options
             });
-          });
+
+            function filterChart(date){
+              const year = date.value.substring(0,4);
+              const month = date.value.substring(5,7);
+
+              const lastDay = (y,m) =>{
+                return new Date(y,m,0).getDate()
+              };
+
+              const startDate = `${date.value}-01`
+              const endDate = `${date.value}-${lastDay(year,month)}`;
+
+              incomeChart.config.options.scales.x.min = startDate;
+              incomeChart.config.options.scales.x.max = endDate;
+              incomeChart.update()
+
+              expenseChart.config.options.scales.x.min = startDate;
+              expenseChart.config.options.scales.x.max = endDate;
+              expenseChart.update()
+            }
+          /*});*/
         </script>
       </div>
 
