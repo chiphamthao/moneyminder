@@ -1,9 +1,9 @@
+
 {% extends "base.html" %}
 
 {% block title %}Dashboard{% endblock %}
 
 {% block content %}
-
 <div class="row">
   <div class="col-12">
     <h1 class="my-4">Hello, {{ current_user.username }}!</h1>
@@ -27,42 +27,122 @@
         </div>
       </div>
     </div>
-    
+
     <div class="row mt-4">
       <!-- Financial Trends Section -->
       <div class="col-md-6">
         <h3>Financial Trends</h3>
-        <div style="width: 100%;">
+
+        <script
+          src="http://ajax.googleapis.com/ajax/libs/jquery/1.8.2/jquery.min.js"
+          type="text/javascript"
+        ></script>
+
+        <div id="div-1" style="width: 100%">
+          <input type="month" onchange="filterChart(this)" />
           <canvas id="incomeChart"></canvas>
         </div>
+        <div id="div-2" style="width: 100%">
+          <canvas id="expenseChart"></canvas>
+        </div>
         <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns/dist/chartjs-adapter-date-fns.bundle.min.js"></script>
         <script>
           document.addEventListener('DOMContentLoaded', function() {
-            const data = {
-              days: {{ chart_data.days | safe }},
-              amounts: {{ chart_data.amounts | safe }}
-            };
+            function filterChart(date){
+              console.log(date.value)
+              const year = date.value.substring(0,4);
+              const month = date.value.substring(5,7);
+              console.log(month)
 
-            new Chart(document.getElementById("incomeChart"), {
+              const lastDay = (y,m) =>{
+                return new Date(y,m,0).getDate()
+              };
+
+              const startDate = `$(date.value)-01`
+              const endDate = `$(date.value)-${lastDay(year,month)}`;
+
+               incomeChart.config.options.scales.x.min = startDate;
+               incomeChart.config.options.scales.x.max = endDate;
+               incomeChart.update()
+
+               expenseChart.config.options.scales.x.min = startDate;
+               expenseChart.config.options.scales.x.max = endDate;
+               expenseChart.update()
+            }
+          const data = {
+              dates: {{ chart_data.dates | safe }},
+              amounts: {{ chart_data.amounts | safe }},
+              income: {{ chart_data.income | safe }},
+              expense: {{ chart_data.expense | safe }},
+          };
+
+          const incomeChart = new Chart(document.getElementById("incomeChart"), {
               type: "bar",
               data: {
-                labels: data.days,
-                datasets: [
-                  {
+              labels: data.dates,
+              datasets: [
+
                     label: "This month's income",
                     data: data.amounts,
                     backgroundColor: 'rgba(54, 162, 235, 0.2)',
                     borderColor: 'rgba(54, 162, 235, 1)',
                     borderWidth: 1,
                     borderRadius: 10,
+
+                  label: "Daily income",
+                  data: data.income,
+                  borderRadius: 10,
+
                   },
-                ],
+              ],
               },
-            });
+              options:{
+              scales:{
+                  x:{
+                      type:'time',
+                      time:{
+                          unit:'day'
+                      }
+                  },
+                  y:{
+                      beginAtZero: true
+                  }
+              }
+              }
+          });
+
+
+          const expenseChart =  new Chart(document.getElementById("expenseChart"), {
+              type: "bar",
+              data: {
+              labels: data.dates,
+              datasets: [
+                  {
+                  label: "Daily expenses",
+                  data: data.expense,
+                  borderRadius: 10,
+                  },
+              ],
+              },
+              options:{
+              scales:{
+                  x:{
+                      type:'time',
+                      time:{
+                          unit:'day'
+                      }
+                  },
+                  y:{
+                      beginAtZero: true
+                  }
+              }
+              }
+          });
           });
         </script>
       </div>
-      
+
       <!-- Input Income/Expenses Section -->
       <div class="col-md-6">
         <h3>Add Income/Expense</h3>
@@ -76,21 +156,54 @@
           </div>
           <div class="form-group">
             <label for="amount">Amount:</label>
-            <input type="number" class="form-control" id="amount" name="amount" min="0.01" step="0.01" required>
+            <input
+              type="number"
+              class="form-control"
+              id="amount"
+              name="amount"
+              min="0.01"
+              step="0.01"
+              required
+            />
           </div>
+
           <div class="form-group">
             <label for="category">Category:</label>
-            <input type="text" class="form-control" id="category" name="category" required>
+            <input
+              type="text"
+              class="form-control"
+              id="category"
+              name="category"
+              required
+            />
           </div>
+
+          <div class="form-group">
+            <label for="datepicker">Date:</label>
+            <input
+              class="form-control"
+              type="date"
+              id="date"
+              name="date"
+              min="2024-01-01"
+              max="2024-12-31"
+            />
+          </div>
+
           <div class="form-group">
             <label for="description">Description:</label>
-            <textarea class="form-control" id="description" name="description"></textarea>
+            <textarea
+              class="form-control"
+              id="description"
+              name="description"
+            ></textarea>
           </div>
+
           <button type="submit" class="btn btn-primary">Add Transaction</button>
         </form>
       </div>
     </div>
-    
+
     <div class="mt-4">
       <h3>Transactions</h3>
       <table class="table table-striped">
@@ -113,8 +226,14 @@
             <td>{{ transaction.description }}</td>
             <td>{{ transaction.date.strftime('%Y-%m-%d') }}</td>
             <td>
-              <form action="{{ url_for('delete_transaction', transaction_id=transaction.id) }}" method="post" style="display:inline;">
-                <button type="submit" class="btn btn-danger btn-sm">Delete</button>
+              <form
+                action="{{ url_for('delete_transaction', transaction_id=transaction.id) }}"
+                method="post"
+                style="display: inline"
+              >
+                <button type="submit" class="btn btn-danger btn-sm">
+                  Delete
+                </button>
               </form>
             </td>
           </tr>
